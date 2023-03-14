@@ -1,13 +1,17 @@
 import * as Tabs from "@radix-ui/react-tabs";
+import { useState } from "react";
 import { Transaction as TransactionType } from "../../../types";
-import { transactions } from "../../api/data/transactions";
 import "./index.css";
 import { Transaction } from "./item";
 
-const isExpense = (transaction: TransactionType) => transaction.amount.value < 0;
+const isExpense = (transaction: TransactionType) =>
+  transaction.amount.value < 0;
 const isIncome = (transaction: TransactionType) => transaction.amount.value > 0;
 
-const Expenses = () => {
+type ExpensesProps = {
+  transactions: TransactionType[] | undefined;
+};
+const Expenses = ({ transactions }: ExpensesProps) => {
   return (
     <table aria-label="Expenses">
       <thead>
@@ -18,7 +22,7 @@ const Expenses = () => {
         </tr>
       </thead>
       <tbody>
-        {transactions.filter(isExpense).map((transaction) => (
+        {transactions?.filter(isExpense).map((transaction) => (
           <Transaction transaction={transaction} key={transaction.id} />
         ))}
       </tbody>
@@ -26,7 +30,10 @@ const Expenses = () => {
   );
 };
 
-const Income = () => {
+type IncomeProps = {
+  transactions: TransactionType[] | undefined;
+};
+const Income = ({ transactions }: IncomeProps) => {
   return (
     <table aria-label="Income">
       <thead>
@@ -37,7 +44,7 @@ const Income = () => {
         </tr>
       </thead>
       <tbody>
-        {transactions.filter(isIncome).map((transaction) => (
+        {transactions?.filter(isIncome).map((transaction) => (
           <Transaction transaction={transaction} key={transaction.id} />
         ))}
       </tbody>
@@ -46,6 +53,11 @@ const Income = () => {
 };
 
 export const TransactionHistory = () => {
+  const [transactions, setTransactions] = useState<TransactionType[]>();
+
+  fetch("/api/transactions", { method: "GET" })
+    .then((res) => res.json())
+    .then(setTransactions);
   return (
     <>
       <h1 className="align-left">Transaction History</h1>
@@ -56,10 +68,10 @@ export const TransactionHistory = () => {
         </Tabs.List>
 
         <Tabs.Content className="TabsContent" value="expenses">
-          <Expenses />
+          <Expenses transactions={transactions} />
         </Tabs.Content>
         <Tabs.Content className="TabsContent" value="income">
-          <Income />
+          <Income transactions={transactions} />
         </Tabs.Content>
       </Tabs.Root>
     </>
