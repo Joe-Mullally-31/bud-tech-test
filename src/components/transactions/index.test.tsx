@@ -1,5 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { TransactionHistory } from ".";
+import { server } from "../../../jest.setup";
+import { rest } from "msw";
 
 describe("transaction history", () => {
   test("the expenses tab should be shown by default", async () => {
@@ -21,7 +23,26 @@ describe("transaction history", () => {
     expect(await screen.findByText("-20.25")).toBeInTheDocument();
   });
 
-  test.skip("changing between the expenses and income tabs should show different transactions", () => {
+  test("each tab shows loading state", () => {
+    server.use(
+      rest.get("/api/accounts", (req, res, ctx) =>
+        res(ctx.delay(2000000), ctx.status(200), ctx.json("foo"))
+      )
+    );
+    render(<TransactionHistory />);
+
+    expect(
+      screen.getByRole("status", { name: "Transaction data loading" })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Income" }));
+
+    expect(
+      screen.getByRole("status", { name: "Transaction data loading" })
+    ).toBeInTheDocument();
+  });
+
+  test.skip("changing between the expenses and income tabs should show different transactions", async () => {
     render(<TransactionHistory />);
 
     const expensesTabTrigger = screen.getByRole("tab", {
@@ -40,9 +61,9 @@ describe("transaction history", () => {
     expect(expensesTable).toBeInTheDocument();
     expect(incomeTable).not.toBeInTheDocument();
 
-    expect(screen.getByText("-20.25")).toBeInTheDocument();
+    expect(await screen.findByText("-20.25")).toBeInTheDocument();
 
-    incomeTabTrigger.click();
+    fireEvent.click(incomeTabTrigger);
 
     expect(incomeTabTrigger).toHaveAttribute("data-state", "active");
     expect(expensesTabTrigger).toHaveAttribute("data-state", "inactive");

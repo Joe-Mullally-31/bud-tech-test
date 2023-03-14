@@ -1,6 +1,7 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Transaction as TransactionType } from "../../../types";
+import { Loading } from "../loading";
 import "./index.css";
 import { Transaction } from "./item";
 
@@ -10,54 +11,70 @@ const isIncome = (transaction: TransactionType) => transaction.amount.value > 0;
 
 type ExpensesProps = {
   transactions: TransactionType[] | undefined;
+  loading: boolean;
 };
-const Expenses = ({ transactions }: ExpensesProps) => {
+const Expenses = ({ transactions, loading }: ExpensesProps) => {
   return (
-    <table aria-label="Expenses">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th>Date</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        {transactions?.filter(isExpense).map((transaction) => (
-          <Transaction transaction={transaction} key={transaction.id} />
-        ))}
-      </tbody>
-    </table>
+    <>
+      <table aria-label="Expenses">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transactions?.filter(isExpense).map((transaction) => (
+            <Transaction transaction={transaction} key={transaction.id} />
+          ))}
+        </tbody>
+      </table>
+      {loading && <Loading />}
+    </>
   );
 };
 
 type IncomeProps = {
   transactions: TransactionType[] | undefined;
+  loading: boolean;
 };
-const Income = ({ transactions }: IncomeProps) => {
+const Income = ({ transactions, loading }: IncomeProps) => {
   return (
-    <table aria-label="Income">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th>Date</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        {transactions?.filter(isIncome).map((transaction) => (
-          <Transaction transaction={transaction} key={transaction.id} />
-        ))}
-      </tbody>
-    </table>
+    <>
+      <table aria-label="Income">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transactions?.filter(isIncome).map((transaction) => (
+            <Transaction transaction={transaction} key={transaction.id} />
+          ))}
+        </tbody>
+      </table>
+      {loading && <Loading />}
+    </>
   );
 };
 
 export const TransactionHistory = () => {
   const [transactions, setTransactions] = useState<TransactionType[]>();
+  const [loading, setLoading] = useState(false);
 
-  fetch("/api/transactions", { method: "GET" })
-    .then((res) => res.json())
-    .then(setTransactions);
+  useEffect(() => {
+    setLoading(true);
+    fetch("/api/transactions", { method: "GET" })
+      .then((res) => res.json())
+      .then((transactions) => {
+        setTransactions(transactions);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <>
       <h1 className="align-left">Transaction History</h1>
@@ -68,10 +85,10 @@ export const TransactionHistory = () => {
         </Tabs.List>
 
         <Tabs.Content className="TabsContent" value="expenses">
-          <Expenses transactions={transactions} />
+          <Expenses transactions={transactions} loading={loading} />
         </Tabs.Content>
         <Tabs.Content className="TabsContent" value="income">
-          <Income transactions={transactions} />
+          <Income transactions={transactions} loading={loading} />
         </Tabs.Content>
       </Tabs.Root>
     </>
