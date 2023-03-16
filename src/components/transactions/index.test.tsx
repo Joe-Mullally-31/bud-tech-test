@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { TransactionHistory } from ".";
 import { server } from "../../../jest.setup";
 import { rest } from "msw";
@@ -20,7 +20,7 @@ describe("transaction history", () => {
     });
 
     expect(expensesTable).toBeInTheDocument();
-    expect(await screen.findByText("-20.25")).toBeInTheDocument();
+    expect(await screen.findByText("-€20.25")).toBeInTheDocument();
   });
 
   test("each tab shows loading state", () => {
@@ -61,12 +61,16 @@ describe("transaction history", () => {
     expect(expensesTable).toBeInTheDocument();
     expect(incomeTable).not.toBeInTheDocument();
 
-    expect(await screen.findByText("-20.25")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByText("-€20.25")).toBeInTheDocument()
+    );
 
     fireEvent.click(incomeTabTrigger);
 
-    expect(incomeTabTrigger).toHaveAttribute("data-state", "active");
+    await waitFor(() =>
+      expect(incomeTabTrigger).toHaveAttribute("data-state", "active")
+    );
     expect(expensesTabTrigger).toHaveAttribute("data-state", "inactive");
-    expect(screen.queryByText("-20.25")).not.toBeInTheDocument();
+    expect(screen.queryByText("-€20.25")).not.toBeInTheDocument();
   });
 });
