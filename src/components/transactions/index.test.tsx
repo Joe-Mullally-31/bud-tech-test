@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { TransactionHistory } from ".";
 import { server } from "../../../jest.setup";
 import { rest } from "msw";
+import userEvent from "@testing-library/user-event";
 
 describe("transaction history", () => {
   test("the expenses tab should be shown by default", async () => {
@@ -33,13 +34,14 @@ describe("transaction history", () => {
         res(ctx.delay(2000000), ctx.status(200), ctx.json("foo"))
       )
     );
+    const user = userEvent.setup();
     render(<TransactionHistory />);
 
     expect(
       screen.getByRole("status", { name: "Transaction data loading" })
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("tab", { name: "Income" }));
+    user.click(screen.getByRole("tab", { name: "Income" }));
 
     expect(
       screen.getByRole("status", { name: "Transaction data loading" })
@@ -62,7 +64,8 @@ describe("transaction history", () => {
     );
   });
 
-  test.skip("changing between the expenses and income tabs should show different transactions", async () => {
+  test("changing between the expenses and income tabs should show different transactions", async () => {
+    const user = userEvent.setup();
     render(<TransactionHistory />);
 
     const expensesTabTrigger = screen.getByRole("tab", {
@@ -88,7 +91,7 @@ describe("transaction history", () => {
       expect(screen.getByText("-€20.25")).toBeInTheDocument()
     );
 
-    fireEvent.click(incomeTabTrigger);
+    user.click(incomeTabTrigger);
 
     await waitFor(() =>
       expect(incomeTabTrigger).toHaveAttribute("data-state", "active")
