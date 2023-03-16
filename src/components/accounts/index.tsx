@@ -12,13 +12,13 @@ export const Accounts = () => {
   }, []);
 
   return (
-    <>
+    <div>
       <h1 className="align-left">Your accounts</h1>
       <div className="accounts">
         {accounts?.map((account) => (
           <AccountItem account={account} key={account.account_id} />
         ))}
       </div>
-    </>
+    </div>
   );
 };

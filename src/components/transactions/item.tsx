@@ -1,6 +1,7 @@
 import type { Transaction as TransactionType } from "../../../types";
 import { useGenerateAmountString } from "../hooks/useGenerateAmountString";
 import { Avatar } from "./avatar";
+import "./index.css";
 
 type Props = {
   transaction: TransactionType;

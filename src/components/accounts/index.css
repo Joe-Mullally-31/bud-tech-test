@@ -8,8 +8,13 @@
   background: var(--background-800);
   padding: var(--spacer-large);
   text-align: left;
+  border-radius: 4px;
 }
 
 .total {
   color: var(--primary-300);
+}
+
+.value {
+  font-size: 1.375rem;
 }

@@ -14,7 +14,7 @@
   height: var(--spacer-xxlarge);
   font-size: var(--font-xlarge);
   font-weight: 600;
-  border-radius: var(--spacer-smallall);
+  border-radius: var(--spacer-small);
   border: 2px solid var(--primary-300);
   background-color: var(--background-900);
   text-transform: uppercase;
@@ -25,7 +25,7 @@
 
 table {
   background-color: var(--background-800);
-  border-radius: var(--spacer-smallall);
+  border-radius: var(--spacer-small);
   width: 100%;
   text-align: left;
 }
@@ -41,8 +41,18 @@ th {
   text-align: left;
 }
 
+td {
+  font-weight: 500;
+}
+
 .transaction-detail {
   display: grid;
   grid-template-columns: min-content 1fr;
   gap: var(--spacer-medium);
+}
+
+.transaction-category {
+  font-size: 0.875rem;
+  color: var(--primary-300);
+  font-weight: 400;
 }

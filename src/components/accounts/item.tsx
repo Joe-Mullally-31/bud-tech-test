@@ -7,13 +7,15 @@ type Props = {
 };
 
 export const AccountItem = ({ account }: Props) => {
-  const {balance: {amount}} = account
+  const {
+    balance: { amount },
+  } = account;
   const value = useGenerateAmountString(amount);
 
   return (
     <div className="account">
       <div className="total">Total {amount.currency}</div>
-      <strong>{value}</strong>
+      <strong className="value">{value}</strong>
     </div>
   );
 };

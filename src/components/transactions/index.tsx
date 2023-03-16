@@ -76,7 +76,7 @@ export const TransactionHistory = () => {
   }, []);
 
   return (
-    <>
+    <div>
       <h1 className="align-left">Transaction History</h1>
       <Tabs.Root defaultValue="expenses" className="flow">
         <Tabs.List className="tabs__list" aria-label="Filter your transactions">
@@ -94,6 +94,6 @@ export const TransactionHistory = () => {
           {!loading && !error && <Income transactions={transactions} />}
         </Tabs.Content>
       </Tabs.Root>
-    </>
+    </div>
   );
 };
