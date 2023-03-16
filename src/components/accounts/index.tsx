@@ -1,14 +1,15 @@
 import { AccountItem } from "./item";
 import "./index.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Account } from "../../../types";
 
 export const Accounts = () => {
   const [accounts, setAccounts] = useState<Account[]>();
-
-  fetch("/api/accounts", { method: "GET" })
-    .then((res) => res.json())
-    .then(setAccounts);
+  useEffect(() => {
+    fetch("/api/accounts", { method: "GET" })
+      .then((res) => res.json())
+      .then(setAccounts);
+  }, []);
 
   return (
     <>

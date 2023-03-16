@@ -1,6 +1,7 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { useEffect, useState } from "react";
 import { Transaction as TransactionType } from "../../../types";
+import { ErrorMessage } from "../errorMessage";
 import { Loading } from "../loading";
 import "./index.css";
 import { Transaction } from "./item";
@@ -11,9 +12,8 @@ const isIncome = (transaction: TransactionType) => transaction.amount.value > 0;
 
 type ExpensesProps = {
   transactions: TransactionType[] | undefined;
-  loading: boolean;
 };
-const Expenses = ({ transactions, loading }: ExpensesProps) => {
+const Expenses = ({ transactions }: ExpensesProps) => {
   return (
     <>
       <table aria-label="Expenses">
@@ -30,16 +30,14 @@ const Expenses = ({ transactions, loading }: ExpensesProps) => {
           ))}
         </tbody>
       </table>
-      {loading && <Loading />}
     </>
   );
 };
 
 type IncomeProps = {
   transactions: TransactionType[] | undefined;
-  loading: boolean;
 };
-const Income = ({ transactions, loading }: IncomeProps) => {
+const Income = ({ transactions }: IncomeProps) => {
   return (
     <>
       <table aria-label="Income">
@@ -56,7 +54,6 @@ const Income = ({ transactions, loading }: IncomeProps) => {
           ))}
         </tbody>
       </table>
-      {loading && <Loading />}
     </>
   );
 };
@@ -64,15 +61,18 @@ const Income = ({ transactions, loading }: IncomeProps) => {
 export const TransactionHistory = () => {
   const [transactions, setTransactions] = useState<TransactionType[]>();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    fetch("/api/transactions", { method: "GET" })
-      .then((res) => res.json())
-      .then((transactions) => {
-        setTransactions(transactions);
-        setLoading(false);
-      });
+    fetch("/api/transactions", { method: "GET" }).then(async (res) => {
+      if (res.ok) {
+        setTransactions(await res.json());
+      } else {
+        setError(true);
+      }
+      setLoading(false);
+    });
   }, []);
 
   return (
@@ -85,10 +85,13 @@ export const TransactionHistory = () => {
         </Tabs.List>
 
         <Tabs.Content className="TabsContent" value="expenses">
-          <Expenses transactions={transactions} loading={loading} />
+          {loading && <Loading />}
+          {error && <ErrorMessage />}
+          {!loading && !error && <Expenses transactions={transactions} />}
         </Tabs.Content>
         <Tabs.Content className="TabsContent" value="income">
-          <Income transactions={transactions} loading={loading} />
+          {loading && <Loading />}
+          {!loading && !error && <Income transactions={transactions} />}
         </Tabs.Content>
       </Tabs.Root>
     </>

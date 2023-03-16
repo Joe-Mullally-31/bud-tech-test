@@ -9,15 +9,19 @@ describe("transaction history", () => {
 
     expect(screen.getByText("Transaction History")).toBeInTheDocument();
 
-    const expensesTabTrigger = screen.getByRole("tab", {
-      name: "Expenses",
-    });
+    const expensesTabTrigger = await waitFor(() =>
+      screen.getByRole("tab", {
+        name: "Expenses",
+      })
+    );
 
     expect(expensesTabTrigger).toHaveAttribute("data-state", "active");
 
-    const expensesTable = screen.getByRole("table", {
-      name: "Expenses",
-    });
+    const expensesTable = await waitFor(() =>
+      screen.getByRole("table", {
+        name: "Expenses",
+      })
+    );
 
     expect(expensesTable).toBeInTheDocument();
     expect(await screen.findByText("-€20.25")).toBeInTheDocument();
@@ -25,7 +29,7 @@ describe("transaction history", () => {
 
   test("each tab shows loading state", () => {
     server.use(
-      rest.get("/api/accounts", (req, res, ctx) =>
+      rest.get("/api/transactions", (req, res, ctx) =>
         res(ctx.delay(2000000), ctx.status(200), ctx.json("foo"))
       )
     );
@@ -42,6 +46,22 @@ describe("transaction history", () => {
     ).toBeInTheDocument();
   });
 
+  test("an error message is displayed if server error", async () => {
+    server.use(
+      rest.get("/api/transactions", (req, res, ctx) =>
+        res(ctx.delay(0), ctx.status(500), ctx.json("foo"))
+      )
+    );
+
+    render(<TransactionHistory />);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("alert", { name: "Error loading transactions." })
+      ).toBeInTheDocument()
+    );
+  });
+
   test.skip("changing between the expenses and income tabs should show different transactions", async () => {
     render(<TransactionHistory />);
 
@@ -51,9 +71,12 @@ describe("transaction history", () => {
     const incomeTabTrigger = screen.getByRole("tab", {
       name: "Income",
     });
-    const expensesTable = screen.getByRole("table", {
-      name: "Expenses",
-    });
+
+    const expensesTable = await waitFor(() =>
+      screen.getByRole("table", {
+        name: "Expenses",
+      })
+    );
     const incomeTable = screen.queryByRole("table", {
       name: "Income",
     });

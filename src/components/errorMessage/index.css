@@ -1,0 +1,11 @@
+.error-message-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--background-800);
+  padding: var(--spacer-large);
+}
+
+.support-link {
+  color: var(--primary-300);
+}
