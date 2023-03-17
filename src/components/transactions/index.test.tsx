@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { TransactionHistory } from ".";
 import { server } from "../../../jest.setup";
 import { rest } from "msw";
@@ -26,6 +26,7 @@ describe("transaction history", () => {
 
     expect(expensesTable).toBeInTheDocument();
     expect(await screen.findByText("-€20.25")).toBeInTheDocument();
+    expect(await screen.findByText("24 June 2022")).toBeInTheDocument();
   });
 
   test("each tab shows loading state", () => {
