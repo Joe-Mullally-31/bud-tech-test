@@ -92,9 +92,6 @@ th {
   font-size: 1rem;
   line-height: 19px;
   color: var(--primary-300);
-}
-
-thead {
   border-bottom: 1px solid #323241;
 }
 

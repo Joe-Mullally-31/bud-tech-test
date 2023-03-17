@@ -5,7 +5,7 @@
 }
 
 .account {
-  background: var(--background-800);
+  background: #14141a;
   padding: var(--spacer-large);
   text-align: left;
   border-radius: 4px;
